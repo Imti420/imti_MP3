@@ -15,14 +15,14 @@ export const Route = createRootRoute({
         name: "description",
         content: "Paste a YouTube link. Rivet asks several mirrors and hands you an MP4 or MP3.",
       },
-      { name: "theme-color", content: "#f3efe6" },
+      { name: "theme-color", content: "#141414" },
     ],
     links: [
       { rel: "icon", type: "image/svg+xml", href: "/favicon.svg" },
       { rel: "preconnect", href: "https://fonts.bunny.net" },
       {
         rel: "stylesheet",
-        href: "https://fonts.bunny.net/css?family=fraunces:500,600|outfit:400,500,600",
+        href: "https://fonts.bunny.net/css?family=barlow-condensed:600,700,800|source-sans-3:400,600|ibm-plex-mono:500,600",
       },
       { rel: "stylesheet", href: appCss },
       { rel: "manifest", href: "/__grok/manifest.webmanifest" },

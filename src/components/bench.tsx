@@ -186,79 +186,91 @@ export function Bench() {
   ].filter(Boolean);
 
   return (
-    <div className="flex flex-col gap-8">
-      <header className="flex items-center justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <span className="size-3 shrink-0 rounded-full bg-rivet" aria-hidden="true" />
-          <p className="font-serif text-2xl tracking-tight">Rivet</p>
+    <div className="flex flex-col gap-7">
+      <header className="flex items-end justify-between gap-4 border-b-[3px] border-ink pb-4">
+        <div>
+          <p className="kicker">DOWNLOAD BENCH · LOCAL</p>
+          <p className="display mt-1 text-4xl sm:text-5xl">
+            RIVET<span className="text-accent">//</span>YT
+          </p>
         </div>
-        <p className="text-sm text-muted">MP4 · MP3</p>
+        <span className="sticker">MP4 · MP3</span>
       </header>
 
-      <div className="flex flex-col gap-3">
-        <h1 className="font-serif text-4xl leading-tight tracking-tight sm:text-5xl">
-          The link goes in.
+      <div className="flex flex-col gap-2">
+        <h1 className="display text-[clamp(2.4rem,8vw,3.6rem)]">
+          Link in.
           <br />
-          The file comes out.
+          File out.
         </h1>
-        <p className="max-w-md text-base leading-6 text-muted">
-          YouTube to a real MP4 or MP3. No convert queue. If one mirror stalls, the next one takes the job.
+        <p className="max-w-md text-base leading-relaxed text-mute">
+          YouTube → real MP4 or MP3. No convert queue. If one mirror stalls, the next one takes the job.
         </p>
       </div>
 
       <form onSubmit={onPrepare} className="flex flex-col gap-4">
-        <div className="rounded-2xl border border-line bg-card p-3">
-          <label htmlFor="yt" className="sr-only">
-            YouTube link
-          </label>
-          <div className="flex flex-col gap-2 sm:flex-row">
-            <input
-              id="yt"
-              value={raw}
-              onChange={(event) => setRaw(event.target.value)}
-              placeholder="https://youtu.be/…"
-              autoCapitalize="off"
-              autoCorrect="off"
-              spellCheck={false}
-              enterKeyHint="go"
-              className="h-12 w-full rounded-xl border border-line bg-paper px-4 text-base text-ink outline-none placeholder:text-muted focus-visible:border-ink"
-            />
-            <button
-              type="button"
-              onClick={() => void onPaste()}
-              className="inline-flex h-12 shrink-0 items-center justify-center gap-2 rounded-xl border border-line bg-paper px-4 text-sm font-medium text-ink"
-            >
-              <ClipboardPaste className="size-4" aria-hidden="true" />
-              Paste
-            </button>
+        <div className="window">
+          <div className="window-bar">
+            <span>paste · look up · prepare</span>
+            <span>{looking ? "READING…" : parsed ? "LINK OK" : "WAITING"}</span>
           </div>
-          <p className="px-1 pt-3 text-sm leading-6 text-muted" aria-live="polite">
-            {looking
-              ? "Reading the link…"
-              : lookupError
-                ? lookupError
-                : "Watch links, Shorts, and youtu.be all work."}
-          </p>
+          <div className="flex flex-col gap-3 p-3 sm:p-4">
+            <label htmlFor="yt" className="sr-only">
+              YouTube link
+            </label>
+            <div className="flex flex-col gap-2 sm:flex-row">
+              <input
+                id="yt"
+                value={raw}
+                onChange={(event) => setRaw(event.target.value)}
+                placeholder="https://youtu.be/…"
+                autoCapitalize="off"
+                autoCorrect="off"
+                spellCheck={false}
+                enterKeyHint="go"
+                className="field"
+              />
+              <button type="button" onClick={() => void onPaste()} className="press shrink-0">
+                <ClipboardPaste className="size-4" aria-hidden="true" />
+                Paste
+              </button>
+            </div>
+            <p className="kicker px-0.5" aria-live="polite">
+              {looking
+                ? "Reading the link…"
+                : lookupError
+                  ? lookupError
+                  : "Watch · Shorts · youtu.be"}
+            </p>
+          </div>
         </div>
 
         {card && parsed ? (
-          <article className="overflow-hidden rounded-2xl border border-line bg-card">
+          <article className="window">
+            <div className="window-bar">
+              <span>preview</span>
+              <span>YOUTUBE</span>
+            </div>
             <img
               src={card.thumbnail}
               alt=""
-              className="aspect-video w-full object-cover"
+              className="aspect-video w-full border-b-[3px] border-ink object-cover"
               referrerPolicy="no-referrer"
             />
             <div className="flex flex-col gap-1 px-4 py-3">
-              <h2 className="text-base font-medium leading-6">{card.title}</h2>
-              {metaBits.length > 0 ? <p className="text-sm leading-6 text-muted">{metaBits.join(" · ")}</p> : null}
+              <h2 className="font-display text-xl font-bold uppercase leading-tight tracking-tight">
+                {card.title}
+              </h2>
+              {metaBits.length > 0 ? (
+                <p className="font-mono text-xs tracking-wide text-mute">{metaBits.join(" · ")}</p>
+              ) : null}
             </div>
           </article>
         ) : null}
 
         {parsed ? (
           <fieldset className="flex flex-col gap-3">
-            <legend className="sr-only">Format</legend>
+            <legend className="kicker">Format</legend>
             <div className="grid grid-cols-2 gap-2">
               <ModeButton active={mode === "video"} onClick={() => setMode("video")} label="Video" icon="film" />
               <ModeButton active={mode === "audio"} onClick={() => setMode("audio")} label="Audio" icon="music" />
@@ -276,20 +288,15 @@ export function Bench() {
                 ))}
               </div>
             )}
-            <p className="text-sm leading-6 text-muted">
+            <p className="text-sm leading-relaxed text-mute">
               {mode === "video"
-                ? "H.264 MP4 with audio already mixed in. If the upload isn't that sharp, you get the best it actually has."
+                ? "H.264 MP4 with audio mixed in. If the upload isn't that sharp, you get the best it has."
                 : "MP3, ready to play. 128 kbps is the quicker, smaller file."}
             </p>
           </fieldset>
         ) : null}
 
-        <button
-          type="submit"
-          disabled={!parsed || pulling}
-          aria-busy={pulling}
-          className="inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-rivet px-5 text-base font-medium text-foam disabled:opacity-50"
-        >
+        <button type="submit" disabled={!parsed || pulling} aria-busy={pulling} className="press press-accent w-full">
           {pulling ? <RotateCw className="size-4 animate-spin" aria-hidden="true" /> : null}
           {pulling ? "Asking mirrors…" : mode === "audio" ? "Prepare MP3" : "Prepare MP4"}
         </button>
@@ -297,49 +304,54 @@ export function Bench() {
 
       <div aria-live="polite" className="flex flex-col gap-3">
         {pullError ? (
-          <p className="rounded-2xl border border-line bg-card px-4 py-3 text-sm leading-6 text-ink">{pullError}</p>
+          <p className="border-[3px] border-ink bg-panel px-4 py-3 text-sm leading-relaxed shadow-[4px_4px_0_0_var(--color-accent)]">
+            {pullError}
+          </p>
         ) : null}
         {file ? (
-          <div className="flex flex-col gap-2 rounded-2xl border border-line bg-card p-3">
-            <a
-              href={file.href}
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-ink px-5 text-base font-medium text-paper"
-            >
-              <Download className="size-4" aria-hidden="true" />
-              Save {file.kind === "mp3" ? "MP3" : "MP4"}
-            </a>
-            <p className="px-1 text-sm leading-6 text-ink">{file.filename}</p>
-            <p className="px-1 text-sm leading-6 text-muted">
-              Ready in {(file.ms / 1000).toFixed(1)}s
-              {file.attempts > 1 ? ` · mirror ${file.attempts}` : ""}. On a phone, open it and use the share sheet to
-              keep the file.
-            </p>
-            <button
-              type="button"
-              onClick={() => void onCopy()}
-              className="h-11 rounded-xl border border-line text-sm font-medium text-ink"
-            >
-              {copied ? "Link copied" : "Copy file link"}
-            </button>
+          <div className="window">
+            <div className="window-bar">
+              <span>ready</span>
+              <span>{(file.ms / 1000).toFixed(1)}S</span>
+            </div>
+            <div className="flex flex-col gap-3 p-3 sm:p-4">
+              <a
+                href={file.href}
+                target="_blank"
+                rel="noreferrer"
+                className="press press-ink w-full no-underline"
+              >
+                <Download className="size-4" aria-hidden="true" />
+                Save {file.kind === "mp3" ? "MP3" : "MP4"}
+              </a>
+              <p className="font-mono text-xs leading-relaxed">{file.filename}</p>
+              <p className="text-sm leading-relaxed text-mute">
+                Ready in {(file.ms / 1000).toFixed(1)}s
+                {file.attempts > 1 ? ` · mirror ${file.attempts}` : ""}. On a phone, open it and use the share sheet.
+              </p>
+              <button type="button" onClick={() => void onCopy()} className="press w-full">
+                {copied ? "Link copied" : "Copy file link"}
+              </button>
+            </div>
           </div>
         ) : null}
       </div>
 
       {ready && recent.length > 0 ? (
         <section className="flex flex-col gap-2">
-          <h2 className="text-sm font-medium text-muted">Recent</h2>
-          <ul className="flex flex-col">
+          <h2 className="kicker">Recent</h2>
+          <ul className="overflow-hidden border-[3px] border-ink bg-panel shadow-[4px_4px_0_0_var(--color-ink)]">
             {recent.map((row) => (
-              <li key={row.id} className="border-t border-line">
+              <li key={row.id} className="border-b-[2px] border-ink last:border-b-0">
                 <button
                   type="button"
                   onClick={() => setRaw(row.url)}
-                  className="flex w-full items-center justify-between gap-3 py-3 text-left"
+                  className="flex w-full items-center justify-between gap-3 px-3 py-3 text-left transition-colors hover:bg-yellow/40"
                 >
-                  <span className="line-clamp-1 text-sm font-medium">{row.title}</span>
-                  <span className="shrink-0 text-sm text-muted">Again</span>
+                  <span className="line-clamp-1 font-display text-lg font-bold uppercase leading-none tracking-tight">
+                    {row.title}
+                  </span>
+                  <span className="kicker shrink-0 text-accent">Again</span>
                 </button>
               </li>
             ))}
@@ -347,9 +359,9 @@ export function Bench() {
         </section>
       ) : null}
 
-      <footer className="border-t border-line pt-4 text-sm leading-6 text-muted">
-        Only save videos you're allowed to keep. Rivet doesn't host the file — a public mirror builds the link, and
-        your browser downloads it.
+      <footer className="border-t-[3px] border-ink pt-4 font-mono text-[11px] leading-relaxed tracking-wide text-mute">
+        Only save videos you&apos;re allowed to keep. Rivet doesn&apos;t host the file — a public mirror builds the
+        link, and your browser downloads it.
       </footer>
     </div>
   );
@@ -368,16 +380,7 @@ function ModeButton({
 }) {
   const Icon = icon === "film" ? Film : Music;
   return (
-    <button
-      type="button"
-      aria-pressed={active}
-      onClick={onClick}
-      className={
-        active
-          ? "inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-ink text-sm font-medium text-paper"
-          : "inline-flex h-12 items-center justify-center gap-2 rounded-xl border border-line bg-paper text-sm font-medium text-ink"
-      }
-    >
+    <button type="button" aria-pressed={active} onClick={onClick} className={active ? "press press-ink w-full" : "press w-full"}>
       <Icon className="size-4" aria-hidden="true" />
       {label}
     </button>
@@ -386,16 +389,7 @@ function ModeButton({
 
 function Chip({ pressed, onClick, label }: { pressed: boolean; onClick: () => void; label: string }) {
   return (
-    <button
-      type="button"
-      aria-pressed={pressed}
-      onClick={onClick}
-      className={
-        pressed
-          ? "h-11 rounded-xl bg-ink text-sm font-medium text-paper"
-          : "h-11 rounded-xl border border-line bg-paper text-sm font-medium text-ink"
-      }
-    >
+    <button type="button" aria-pressed={pressed} onClick={onClick} className={pressed ? "press press-ink w-full !min-h-11 !text-sm" : "press w-full !min-h-11 !text-sm"}>
       {label}
     </button>
   );
