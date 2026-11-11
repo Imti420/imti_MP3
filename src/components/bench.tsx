@@ -179,33 +179,62 @@ export function Bench() {
     }
   }
 
-  const metaBits = [
-    card?.author,
-    card?.duration != null ? clock(card.duration) : null,
-    card?.views != null && card.views > 0 ? `${compact(card.views)} views` : null,
-  ].filter(Boolean);
-
   return (
-    <div className="flex flex-col gap-7">
-      <header className="flex items-end justify-between gap-4 border-b-[3px] border-ink pb-4">
-        <div>
-          <p className="kicker">DOWNLOAD BENCH · LOCAL</p>
-          <p className="display mt-1 text-4xl sm:text-5xl">
+    <div className="desk-shell flex flex-col gap-6">
+      <header className="mast">
+        <div className="min-w-0">
+          <div className="mb-2 flex flex-wrap items-center gap-2">
+            <span className="live-dot" aria-hidden="true" />
+            <p className="kicker">Local download bench</p>
+          </div>
+          <p className="display text-[clamp(2.6rem,10vw,3.8rem)]">
             RIVET<span className="text-accent">//</span>YT
           </p>
         </div>
-        <span className="sticker">MP4 · MP3</span>
+        <div className="flex shrink-0 flex-col items-end gap-2">
+          <span className="sticker">MP4 · MP3</span>
+          <span className="sticker sticker-accent hidden sm:inline-flex">No queue</span>
+        </div>
       </header>
 
-      <div className="flex flex-col gap-2">
-        <h1 className="display text-[clamp(2.4rem,8vw,3.6rem)]">
-          Link in.
+      <section className="flex flex-col gap-3">
+        <h1 className="display hero-title">
+          Link in
+          <span className="slash">.</span>
           <br />
-          File out.
+          File out
+          <span className="slash">.</span>
         </h1>
-        <p className="max-w-md text-base leading-relaxed text-mute">
-          YouTube → real MP4 or MP3. No convert queue. If one mirror stalls, the next one takes the job.
+        <p className="max-w-lg text-[1.05rem] leading-relaxed text-mute">
+          Paste a YouTube URL. Rivet hits multiple mirrors and hands you a real{" "}
+          <span className="font-semibold text-ink">MP4</span> or{" "}
+          <span className="font-semibold text-ink">MP3</span> — no convert queue.
         </p>
+      </section>
+
+      <div
+        className={
+          looking || pulling
+            ? "hud scan hud-live"
+            : "hud"
+        }
+      >
+        <div className="hud-cell">
+          <span className="hud-label">Link</span>
+          <span className="hud-value">
+            {looking ? "Reading" : parsed ? "Locked" : "Empty"}
+          </span>
+        </div>
+        <div className="hud-cell">
+          <span className="hud-label">Mode</span>
+          <span className="hud-value">{mode === "audio" ? "MP3" : "MP4"}</span>
+        </div>
+        <div className="hud-cell">
+          <span className="hud-label">Status</span>
+          <span className="hud-value">
+            {pulling ? "Mirrors" : file ? "Ready" : lookupError ? "Check" : "Idle"}
+          </span>
+        </div>
       </div>
 
       <form onSubmit={onPrepare} className="flex flex-col gap-4">
@@ -235,7 +264,7 @@ export function Bench() {
                 Paste
               </button>
             </div>
-            <p className="kicker px-0.5" aria-live="polite">
+            <p className="kicker" aria-live="polite">
               {looking
                 ? "Reading the link…"
                 : lookupError
@@ -246,24 +275,28 @@ export function Bench() {
         </div>
 
         {card && parsed ? (
-          <article className="window">
+          <article className="window window-ink">
             <div className="window-bar">
               <span>preview</span>
               <span>YOUTUBE</span>
             </div>
-            <img
-              src={card.thumbnail}
-              alt=""
-              className="aspect-video w-full border-b-[3px] border-ink object-cover"
-              referrerPolicy="no-referrer"
-            />
-            <div className="flex flex-col gap-1 px-4 py-3">
-              <h2 className="font-display text-xl font-bold uppercase leading-tight tracking-tight">
+            <div className="thumb-frame">
+              <img src={card.thumbnail} alt="" referrerPolicy="no-referrer" />
+              {card.duration != null ? (
+                <span className="thumb-badge">{clock(card.duration)}</span>
+              ) : null}
+            </div>
+            <div className="flex flex-col gap-2 px-4 py-3.5">
+              <h2 className="font-display text-[1.35rem] font-bold uppercase leading-[1.05] tracking-tight sm:text-2xl">
                 {card.title}
               </h2>
-              {metaBits.length > 0 ? (
-                <p className="font-mono text-xs tracking-wide text-mute">{metaBits.join(" · ")}</p>
-              ) : null}
+              <div className="meta-row">
+                {card.author ? <span className="pill">{card.author}</span> : null}
+                {card.views != null && card.views > 0 ? (
+                  <span className="pill">{compact(card.views)} views</span>
+                ) : null}
+                <span className="pill pill-hot">{mode === "audio" ? "MP3" : "MP4"}</span>
+              </div>
             </div>
           </article>
         ) : null}
@@ -271,18 +304,18 @@ export function Bench() {
         {parsed ? (
           <fieldset className="flex flex-col gap-3">
             <legend className="kicker">Format</legend>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="segment">
               <ModeButton active={mode === "video"} onClick={() => setMode("video")} label="Video" icon="film" />
               <ModeButton active={mode === "audio"} onClick={() => setMode("audio")} label="Audio" icon="music" />
             </div>
             {mode === "video" ? (
-              <div className="grid grid-cols-4 gap-2">
+              <div className="chip-grid chip-grid-4">
                 {QUALITIES.map((q) => (
                   <Chip key={q} pressed={quality === q} onClick={() => setQuality(q)} label={q} />
                 ))}
               </div>
             ) : (
-              <div className="grid grid-cols-2 gap-2">
+              <div className="chip-grid chip-grid-2">
                 {BITRATES.map((b) => (
                   <Chip key={b} pressed={bitrate === b} onClick={() => setBitrate(b)} label={`${b} kbps`} />
                 ))}
@@ -290,44 +323,49 @@ export function Bench() {
             )}
             <p className="text-sm leading-relaxed text-mute">
               {mode === "video"
-                ? "H.264 MP4 with audio mixed in. If the upload isn't that sharp, you get the best it has."
-                : "MP3, ready to play. 128 kbps is the quicker, smaller file."}
+                ? "H.264 MP4 with audio mixed in. If the upload is soft, you get the best stream available."
+                : "MP3 ready to play. 128 kbps is smaller and faster; 320 is heavier."}
             </p>
           </fieldset>
         ) : null}
 
-        <button type="submit" disabled={!parsed || pulling} aria-busy={pulling} className="press press-accent w-full">
-          {pulling ? <RotateCw className="size-4 animate-spin" aria-hidden="true" /> : null}
+        <button
+          type="submit"
+          disabled={!parsed || pulling}
+          aria-busy={pulling}
+          className="press press-accent press-lg w-full"
+        >
+          {pulling ? <RotateCw className="size-5 animate-spin" aria-hidden="true" /> : null}
           {pulling ? "Asking mirrors…" : mode === "audio" ? "Prepare MP3" : "Prepare MP4"}
         </button>
       </form>
 
       <div aria-live="polite" className="flex flex-col gap-3">
         {pullError ? (
-          <p className="border-[3px] border-ink bg-panel px-4 py-3 text-sm leading-relaxed shadow-[4px_4px_0_0_var(--color-accent)]">
+          <p className="border-[3px] border-ink bg-panel px-4 py-3 text-sm leading-relaxed shadow-[5px_5px_0_0_var(--color-accent)]">
             {pullError}
           </p>
         ) : null}
         {file ? (
           <div className="window">
             <div className="window-bar">
-              <span>ready</span>
-              <span>{(file.ms / 1000).toFixed(1)}S</span>
+              <span>file ready</span>
+              <span>{(file.ms / 1000).toFixed(1)}S · M{file.attempts}</span>
             </div>
             <div className="flex flex-col gap-3 p-3 sm:p-4">
               <a
                 href={file.href}
                 target="_blank"
                 rel="noreferrer"
-                className="press press-ink w-full no-underline"
+                className="press press-ink press-lg w-full no-underline"
               >
-                <Download className="size-4" aria-hidden="true" />
+                <Download className="size-5" aria-hidden="true" />
                 Save {file.kind === "mp3" ? "MP3" : "MP4"}
               </a>
-              <p className="font-mono text-xs leading-relaxed">{file.filename}</p>
+              <p className="break-all font-mono text-xs leading-relaxed">{file.filename}</p>
               <p className="text-sm leading-relaxed text-mute">
-                Ready in {(file.ms / 1000).toFixed(1)}s
-                {file.attempts > 1 ? ` · mirror ${file.attempts}` : ""}. On a phone, open it and use the share sheet.
+                Built in {(file.ms / 1000).toFixed(1)}s
+                {file.attempts > 1 ? ` after ${file.attempts} mirrors` : ""}. On phone, open then share-to-save.
               </p>
               <button type="button" onClick={() => void onCopy()} className="press w-full">
                 {copied ? "Link copied" : "Copy file link"}
@@ -339,19 +377,18 @@ export function Bench() {
 
       {ready && recent.length > 0 ? (
         <section className="flex flex-col gap-2">
-          <h2 className="kicker">Recent</h2>
-          <ul className="overflow-hidden border-[3px] border-ink bg-panel shadow-[4px_4px_0_0_var(--color-ink)]">
+          <div className="flex items-baseline justify-between gap-3">
+            <h2 className="kicker">Recent</h2>
+            <span className="kicker">{recent.length} kept</span>
+          </div>
+          <ul className="recent-list">
             {recent.map((row) => (
-              <li key={row.id} className="border-b-[2px] border-ink last:border-b-0">
-                <button
-                  type="button"
-                  onClick={() => setRaw(row.url)}
-                  className="flex w-full items-center justify-between gap-3 px-3 py-3 text-left transition-colors hover:bg-yellow/40"
-                >
+              <li key={row.id}>
+                <button type="button" onClick={() => setRaw(row.url)} className="recent-row">
                   <span className="line-clamp-1 font-display text-lg font-bold uppercase leading-none tracking-tight">
                     {row.title}
                   </span>
-                  <span className="kicker shrink-0 text-accent">Again</span>
+                  <span className="kicker shrink-0 text-accent">Again →</span>
                 </button>
               </li>
             ))}
@@ -359,9 +396,9 @@ export function Bench() {
         </section>
       ) : null}
 
-      <footer className="border-t-[3px] border-ink pt-4 font-mono text-[11px] leading-relaxed tracking-wide text-mute">
-        Only save videos you&apos;re allowed to keep. Rivet doesn&apos;t host the file — a public mirror builds the
-        link, and your browser downloads it.
+      <footer className="colophon">
+        Only keep what you&apos;re allowed to keep. Rivet does not host files — mirrors build the link; your browser
+        downloads it.
       </footer>
     </div>
   );
@@ -380,7 +417,7 @@ function ModeButton({
 }) {
   const Icon = icon === "film" ? Film : Music;
   return (
-    <button type="button" aria-pressed={active} onClick={onClick} className={active ? "press press-ink w-full" : "press w-full"}>
+    <button type="button" aria-pressed={active} onClick={onClick}>
       <Icon className="size-4" aria-hidden="true" />
       {label}
     </button>
@@ -389,7 +426,7 @@ function ModeButton({
 
 function Chip({ pressed, onClick, label }: { pressed: boolean; onClick: () => void; label: string }) {
   return (
-    <button type="button" aria-pressed={pressed} onClick={onClick} className={pressed ? "press press-ink w-full !min-h-11 !text-sm" : "press w-full !min-h-11 !text-sm"}>
+    <button type="button" aria-pressed={pressed} onClick={onClick} className="chip">
       {label}
     </button>
   );
