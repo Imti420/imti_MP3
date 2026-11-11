@@ -399,6 +399,8 @@ export function Bench() {
       <footer className="colophon">
         Only keep what you&apos;re allowed to keep. Rivet does not host files — mirrors build the link; your browser
         downloads it.
+        <br />
+        <span className="text-ink">BUILD desk-3 · A26 skin</span>
       </footer>
     </div>
   );

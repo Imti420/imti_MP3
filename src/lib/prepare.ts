@@ -36,7 +36,9 @@ export type PrepareResult =
  * Public cobalt-compatible API that still serves YouTube without a JWT.
  * Ordered so the last one that answered is tried first on the next request.
  */
-const MIRRORS = ["https://rue-cobalt.xenon.zone/"];
+const MIRRORS = [
+  "https://rue-cobalt.xenon.zone/",
+];
 
 const PIPED = [
   "https://api.piped.private.coffee",
@@ -342,7 +344,7 @@ export async function prepareFromUrl(input: PrepareInput): Promise<PrepareResult
       attempts,
     };
   }
-  if (backup && input.mode === "audio" && backup.filename.endsWith(".mp3")) {
+  if (backup && input.mode === "audio") {
     return {
       ok: true,
       href: backup.href,
